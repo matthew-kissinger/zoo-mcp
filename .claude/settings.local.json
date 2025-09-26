@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pip install:*)",
+      "Bash(python:*)",
+      "Bash(pytest:*)",
+      "Bash(where uv)",
+      "Read(//c/Users/Mattm/.claude/**)",
+      "Bash(cat:*)",
+      "Bash(ls:*)",
+      "WebSearch",
+      "Bash(claude:*)",
+      "WebFetch(domain:github.com)",
+      "mcp__zoo-mcp__gh_search_repos",
+      "mcp__zoo-mcp__gh_search_code",
+      "mcp__zoo-mcp__gh_get_contents",
+      "mcp__zoo-mcp__gh_releases",
+      "mcp__zoo-mcp__gh_issues_with_code",
+      "mcp__zoo-mcp__grep_search",
+      "mcp__zoo-mcp__libsio_dependents",
+      "mcp__zoo-mcp__so_accepted",
+      "Bash(uv run:*)",
+      "Bash(npx @modelcontextprotocol/inspector uv run:*)",
+      "mcp__zoo-mcp__gh_get_archive",
+      "Bash(gh:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "zoo-mcp"
+  ]
+}
