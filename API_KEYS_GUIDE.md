@@ -10,6 +10,7 @@ This guide walks you through obtaining all API keys needed for Zoo MCP.
 |-----|-----------|---------|------------|
 | GitHub Token | **Recommended** | Higher rate limits (5000/hr vs 60/hr) | ✅ Yes |
 | Libraries.io | **Recommended** | Find package dependents | ✅ Yes |
+| Exa | **Recommended** | Semantic/neural code search | ✅ Yes ($10 free credits) |
 | Grep.app | Optional | Enhanced code search (public instance is free) | ✅ Yes |
 | Stack Exchange | Optional | Slightly higher rate limits | ✅ Yes |
 
@@ -102,7 +103,44 @@ If you're running your own Grep.app instance:
 
 ---
 
-## 4. Stack Exchange API Key (Optional)
+## 4. Exa API Key (Recommended)
+
+**Why:** Semantic/neural search for code examples. Unlike keyword search, Exa understands meaning - search for "authentication patterns" and find relevant implementations even if they don't contain those exact words.
+
+### Steps:
+
+1. Go to **[Exa.ai](https://exa.ai/)**
+   - Direct link: https://exa.ai/
+
+2. Click **"Get API Key"** or **"Sign Up"** (top right)
+   - Sign in with Google or email
+
+3. After signing in, go to **[Dashboard > API Keys](https://dashboard.exa.ai/api-keys)**
+   - Direct link: https://dashboard.exa.ai/api-keys
+
+4. Copy your API key
+   - Format: `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx` (UUID format)
+   - You get **$10 in free credits** to start
+
+5. Add to your `.env`:
+   ```bash
+   EXA_API_KEY=your_key_here
+   ```
+
+**Key Features:**
+- Neural search: finds code by meaning, not just keywords
+- Searches 1B+ webpages (GitHub, Stack Overflow, docs)
+- Returns dense, relevant context for coding agents
+- Rate limit: 5 queries/second (default)
+
+**Pricing:**
+- $10 free credits included
+- ~$0.005 per search (1-25 results)
+- Pay-as-you-go after free credits
+
+---
+
+## 5. Stack Exchange API Key (Optional)
 
 **Why:** Fetch accepted Stack Overflow answers with code. The key gives you higher rate limits (10,000/day vs 300/day).
 
@@ -155,6 +193,9 @@ GREP_API_KEY=
 
 # Libraries.io API (RECOMMENDED)
 LIBRARIESIO_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# Exa API (RECOMMENDED for semantic search)
+EXA_API_KEY=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 
 # Stack Exchange API (optional)
 STACKEXCHANGE_KEY=xxxxxxxxxxxxxx
@@ -256,8 +297,9 @@ python -m zoo_mcp.server stdio
 
 1. Get GitHub token: https://github.com/settings/tokens → Generate (public_repo scope)
 2. Get Libraries.io key: https://libraries.io/account → Copy API key
-3. Add both to `.env`
-4. Done!
+3. Get Exa key: https://dashboard.exa.ai/api-keys → Copy key
+4. Add all to `.env`
+5. Done!
 
 **Full setup (10 minutes):**
 - Follow all sections above for optimal rate limits
@@ -268,6 +310,7 @@ python -m zoo_mcp.server stdio
 
 - **GitHub API docs**: https://docs.github.com/en/rest
 - **Libraries.io docs**: https://libraries.io/api
+- **Exa API docs**: https://docs.exa.ai/
 - **Stack Exchange API docs**: https://api.stackexchange.com/docs
 
 For Zoo MCP issues, see README.md or open an issue.

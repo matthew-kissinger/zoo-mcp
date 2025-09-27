@@ -175,3 +175,89 @@ class SOAcceptedInput(BaseModel):
 
 class SOAcceptedOutput(BaseModel):
     answers: List[SOAnswer]
+
+
+class ZooCreateInput(BaseModel):
+    name: str
+    description: str
+    tags: Optional[List[str]] = None
+
+
+class ZooUpdateInput(BaseModel):
+    zoo_id: str
+    name: Optional[str] = None
+    description: Optional[str] = None
+    tags: Optional[List[str]] = None
+
+
+class ZooSearchInput(BaseModel):
+    query: str
+
+
+class TaskCreateInput(BaseModel):
+    zoo_id: str
+    name: str
+    description: str
+    tags: Optional[List[str]] = None
+
+
+class TaskUpdateInput(BaseModel):
+    zoo_id: str
+    task_id: str
+    name: Optional[str] = None
+    description: Optional[str] = None
+    status: Optional[str] = None
+    tags: Optional[List[str]] = None
+
+
+class ExaResult(BaseModel):
+    title: str
+    url: str
+    published_date: Optional[str] = None
+    author: Optional[str] = None
+    text: Optional[str] = None
+    score: Optional[float] = None
+    repo: Optional[str] = None
+    path: Optional[str] = None
+    ref: Optional[str] = None
+
+
+class ExaSearchInput(BaseModel):
+    query: str
+    search_type: Optional[Literal["neural", "keyword", "auto"]] = "auto"
+    num_results: Optional[int] = Field(default=10, le=100)
+    include_domains: Optional[List[str]] = None
+    exclude_domains: Optional[List[str]] = None
+    start_published_date: Optional[str] = None
+    end_published_date: Optional[str] = None
+    use_autoprompt: Optional[bool] = True
+    category: Optional[str] = None
+
+
+class ExaSearchOutput(BaseModel):
+    items: List[ExaResult]
+    autoprompt_string: Optional[str] = None
+
+
+class ExaCodeSearchInput(BaseModel):
+    query: str
+    num_results: Optional[int] = Field(default=10, le=100)
+    include_domains: Optional[List[str]] = None
+
+
+class ExaCodeSearchOutput(BaseModel):
+    items: List[ExaResult]
+    autoprompt_string: Optional[str] = None
+
+
+class ExaFindSimilarInput(BaseModel):
+    url: str
+    num_results: Optional[int] = Field(default=10, le=100)
+    exclude_source_domain: Optional[bool] = False
+    include_domains: Optional[List[str]] = None
+    exclude_domains: Optional[List[str]] = None
+    start_published_date: Optional[str] = None
+
+
+class ExaFindSimilarOutput(BaseModel):
+    items: List[ExaResult]
