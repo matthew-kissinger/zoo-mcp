@@ -1,4 +1,5 @@
 import pytest
+import requests
 from unittest.mock import Mock, patch, MagicMock
 from pathlib import Path
 from zoo_mcp.adapters.github import GitHubAdapter
@@ -136,6 +137,126 @@ class TestStackExchangeAdapter:
         assert adapter._detect_language("def foo(): pass") == "python"
         assert adapter._detect_language("function foo() {}") == "javascript"
         assert adapter._detect_language("public class Foo {}") == "java"
+
+    @patch("zoo_mcp.adapters.stackexchange.requests.Session.get")
+    def test_search_accepted_answers_success(self, mock_get):
+        search_response = Mock()
+        search_response.status_code = 200
+        search_response.json.return_value = {
+            "items": [
+                {
+                    "title": "How to parse JSON in Python?",
+                    "link": "https://stackoverflow.com/q/123",
+                    "accepted_answer_id": 456,
+                }
+            ]
+        }
+
+        answer_response = Mock()
+        answer_response.status_code = 200
+        answer_response.json.return_value = {
+            "items": [
+                {
+                    "body": "<pre><code>import json\ndata = json.loads(text)</code></pre>"
+                }
+            ]
+        }
+
+        mock_get.side_effect = [search_response, answer_response]
+
+        adapter = StackExchangeAdapter()
+        result = adapter.search_accepted_answers("parse JSON", limit=10)
+
+        assert len(result["answers"]) == 1
+        assert result["answers"][0]["question"] == "How to parse JSON in Python?"
+        assert result["answers"][0]["answer_url"] == "https://stackoverflow.com/q/123"
+        assert len(result["answers"][0]["code_blocks"]) == 1
+        assert "import json" in result["answers"][0]["code_blocks"][0]["text"]
+        assert result["answers"][0]["code_blocks"][0]["lang"] == "python"
+
+    @patch("zoo_mcp.adapters.stackexchange.requests.Session.get")
+    def test_search_accepted_answers_with_tags(self, mock_get):
+        search_response = Mock()
+        search_response.status_code = 200
+        search_response.json.return_value = {"items": []}
+        mock_get.return_value = search_response
+
+        adapter = StackExchangeAdapter()
+        adapter.search_accepted_answers("test query", tags=["python", "django"], limit=10)
+
+        call_args = mock_get.call_args
+        assert call_args[1]["params"]["tagged"] == "python;django"
+
+    @patch("zoo_mcp.adapters.stackexchange.requests.Session.get")
+    def test_search_accepted_answers_with_api_key(self, mock_get):
+        search_response = Mock()
+        search_response.status_code = 200
+        search_response.json.return_value = {"items": []}
+        mock_get.return_value = search_response
+
+        adapter = StackExchangeAdapter(api_key="test_api_key")
+        adapter.search_accepted_answers("test query", limit=10)
+
+        call_args = mock_get.call_args
+        assert call_args[1]["params"]["key"] == "test_api_key"
+
+    @patch("zoo_mcp.adapters.stackexchange.requests.Session.get")
+    def test_search_accepted_answers_no_accepted_answer(self, mock_get):
+        search_response = Mock()
+        search_response.status_code = 200
+        search_response.json.return_value = {
+            "items": [
+                {
+                    "title": "Question without accepted answer",
+                    "link": "https://stackoverflow.com/q/789",
+                },
+                {
+                    "title": "Question with accepted answer",
+                    "link": "https://stackoverflow.com/q/123",
+                    "accepted_answer_id": 456,
+                },
+            ]
+        }
+
+        answer_response = Mock()
+        answer_response.status_code = 200
+        answer_response.json.return_value = {
+            "items": [
+                {
+                    "body": "<pre><code>function test() {}</code></pre>"
+                }
+            ]
+        }
+
+        mock_get.side_effect = [search_response, answer_response]
+
+        adapter = StackExchangeAdapter()
+        result = adapter.search_accepted_answers("test query", limit=10)
+
+        assert len(result["answers"]) == 1
+        assert result["answers"][0]["question"] == "Question with accepted answer"
+        assert mock_get.call_count == 2
+
+    @patch("zoo_mcp.adapters.stackexchange.requests.Session.get")
+    def test_search_accepted_answers_request_exception(self, mock_get):
+        mock_get.side_effect = requests.RequestException("Network error")
+
+        adapter = StackExchangeAdapter()
+        result = adapter.search_accepted_answers("test query", limit=10)
+
+        assert result == {"answers": []}
+
+    @patch("zoo_mcp.adapters.stackexchange.requests.Session.get")
+    def test_search_accepted_answers_empty_results(self, mock_get):
+        search_response = Mock()
+        search_response.status_code = 200
+        search_response.json.return_value = {"items": []}
+        mock_get.return_value = search_response
+
+        adapter = StackExchangeAdapter()
+        result = adapter.search_accepted_answers("test query", limit=10)
+
+        assert result == {"answers": []}
 
 
 class TestExaAdapter:
