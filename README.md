@@ -1,5 +1,7 @@
 # Zoo MCP — Code-Example Discovery Layer
 
+![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)
+
 > Give your coding agent **live, high-signal example code** on demand. Not summaries. Not vibes. Snippets with provenance.
 
 ## What is Zoo MCP?
